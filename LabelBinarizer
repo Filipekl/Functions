@@ -1,19 +1,24 @@
 class myLabelBinarizer(BaseEstimator, TransformerMixin):
-    def __init__(self, cat_variables, prefix_sep='_'):
+    def __init__(self, cat_variables, prefix_sep='_', sparse_output=False):
         self.cat_variables = cat_variables
         self.prefix_sep = prefix_sep
-        
-    def fit(self, X, y=None):
+        self.sparse_output = sparse_output
+    
+    def fit(self, X):
         self.lbDict = {}
         self.classes_ = []
         for var in self.cat_variables:
-            lb = LabelBinarizer()
+            lb = LabelBinarizer(sparse_output=self.sparse_output)
             lb.fit(X[var].fillna('nan').astype('str'))
             self.lbDict[var] = lb
             classes = ['architecturalstyletypeid'+self.prefix_sep+x for x in lb.classes_]
             self.classes_ += classes
-        
         return self
     
     def transform(self, X):
-        return self
+        transformed = np.empty(df_properties.shape)
+        for var, lb in self.lbDict.items():
+            transformedX = lb.transform(X[var].fillna('nan').astype('str'))
+            transformed = np.append(transformed, transformedX, axis=1)
+        return transformed
+        
