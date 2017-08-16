@@ -11,7 +11,7 @@ class myLabelBinarizer(BaseEstimator, TransformerMixin):
             lb = LabelBinarizer(sparse_output=self.sparse_output)
             lb.fit(X[var].fillna('nan').astype('str'))
             self.lbDict[var] = lb
-            classes = ['architecturalstyletypeid'+self.prefix_sep+x for x in lb.classes_]
+            classes = [var+self.prefix_sep+x for x in lb.classes_]
             self.classes_ += classes
         return self
     
@@ -21,4 +21,3 @@ class myLabelBinarizer(BaseEstimator, TransformerMixin):
             transformedX = lb.transform(X[var].fillna('nan').astype('str'))
             transformed = np.append(transformed, transformedX, axis=1)
         return transformed
-        
